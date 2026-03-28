@@ -609,7 +609,7 @@
             </select>
           </div>
 
-          <button type="submit" class="form-submit" id="submit-btn">
+          <button type="submit" class="form-submit" id="submit-btn-popup">
             <span class="spinner"></span>
             <span class="btn-text" id="submit-label">Get FREE Demo Class →</span>
           </button>
@@ -649,8 +649,8 @@
         body: JSON.stringify(formData),
       });
       
-      alert("Data Stored Successfully");
-      window.location.href = "./login360-thank-you.html";
+      // alert("Data Stored Successfully");
+      window.location.href = "./thank-you.html";
 
     } catch (err) {
       console.error('Submission error:', err);
@@ -729,7 +729,7 @@
     };
 
     // Loading state
-    const btn = document.getElementById('submit-btn');
+    const btn = document.getElementById('submit-btn-popup');
     btn.classList.add('loading');
     btn.disabled = true;
 
@@ -741,8 +741,8 @@
         body: JSON.stringify(formData),
       });
       
-      alert("Data Stored Successfully");
-      window.location.href = "./login360-thank-you.html";
+      // alert("Data Stored Successfully");
+      window.location.href = "./thank-you.html";
 
     } catch (err) {
       console.error('Submission error:', err);
