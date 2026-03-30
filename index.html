@@ -518,7 +518,7 @@
 <!-- STICKY NAV -->
 <nav class="nav">
   <div class="nav-logo"><img src="./images/login.png" alt="">Login<span>360</span></div>
-  <a href="tel:+918754687537" class="nav-cta">📞 Call Now</a>
+  <a href="tel:+918056477261" class="nav-cta">📞 Call Now</a>
 </nav>
 
 <!-- HERO -->
@@ -537,8 +537,8 @@
       </ul>
       <div class="hero-ctas">
         <a href="#" class="btn btn-primary" onclick="openPopup('want_demo_class')">🎓 Enroll Now</a>
-        <a href="https://wa.me/918754687537?text=Hi%20Login360%2C%20I%20want%20to%20know%20about%20Data%20Analytics%20Course" class="btn btn-wa" target="_blank">💬 WhatsApp Us</a>
-        <a href="tel:+918754687537" class="btn btn-call">📞 Call Now</a>
+        <a href="https://wa.me/918056477261?text=Hi%20Login360%2C%20I%20want%20to%20know%20about%20Data%20Analytics%20Course" class="btn btn-wa" target="_blank">💬 WhatsApp Us</a>
+        <a href="tel:+918056477261" class="btn btn-call">📞 Call Now</a>
       </div>
     </div>
     <form id="enroll-form">
@@ -609,7 +609,7 @@
             <input type="text" id="f-location" name="location" placeholder="City, State (e.g. Chennai, Tamil Nadu)" autocomplete="address-level2">
           </div>
 
-          <div class="form-group">
+          <div class="form-group" id="course_field">
             <label for="f-course">Select Course *</label>
             <select id="f-course" name="course">
               <!-- <option value="">Select Course</option> -->
@@ -758,7 +758,8 @@
   /* ─── OPEN POPUP ──────────────────────────────────────────── */
   function openPopup(formType) {
     const cfg = FORM_CONFIG[formType] || FORM_CONFIG['want_demo_class'];
-
+    const course = document.getElementById('course_field');
+    course.style.display = "block";
     // Update UI
     document.getElementById('popup-card').setAttribute('data-badge', cfg.badge);
     document.getElementById('popup-title').textContent = cfg.title;
@@ -771,6 +772,10 @@
 
     // Focus first input for accessibility
     setTimeout(() => document.getElementById('f-name').focus(), 280);
+  
+    if (formType == "download_full_syllabus"){
+      course.style.display = "none";
+    }
   }
 
   /* ─── CLOSE POPUP ─────────────────────────────────────────── */
@@ -1154,8 +1159,8 @@
     <p>Every day you delay is another day without a job. Take the first step — it's completely FREE. Book your demo class now.</p>
     <div class="cta-group">
       <a href="#final-cta" class="btn btn-white" onclick="openPopup('want_demo_class')">🎓 Book Free Demo Class</a>
-      <a href="tel:+918754687537" class="btn btn-dark">📞 Call Us Now</a>
-      <a href="https://wa.me/918754687537?text=Hi%20Login360%2C%20I%20want%20to%20enroll%20in%20Data%20Analytics%20Course" class="btn btn-wa" target="_blank">💬 WhatsApp Us</a>
+      <a href="tel:+918056477261" class="btn btn-dark">📞 Call Us Now</a>
+      <a href="https://wa.me/918056477261?text=Hi%20Login360%2C%20I%20want%20to%20enroll%20in%20Data%20Analytics%20Course" class="btn btn-wa" target="_blank">💬 WhatsApp Us</a>
     </div>
     <p style="color:rgba(255,255,255,0.6);font-size:0.82rem;margin-top:20px;">📍 Velachery | Coimbatore | Kochi | Online Across India | www.login360.in</p>
   </div>
@@ -1168,7 +1173,7 @@
 </footer>
 
 <!-- STICKY WHATSAPP BUTTON -->
-<a class="sticky-wa" href="https://wa.me/918754687537?text=Hi%20Login360%2C%20I%20want%20to%20know%20about%20Data%20Analytics%20Course" target="_blank">
+<a class="sticky-wa" href="https://wa.me/918056477261?text=Hi%20Login360%2C%20I%20want%20to%20know%20about%20Data%20Analytics%20Course" target="_blank">
   <span class="sticky-wa-label">Chat with us!</span>
   💬
 </a>
