@@ -307,18 +307,69 @@
   }
   .stat-num { font-size: 2rem; font-weight: 800; color: var(--brand); font-family: 'Sora', sans-serif; }
   .stat-label { font-size: 0.82rem; color: var(--muted); font-weight: 600; margin-top: 4px; }
-  .testimonials { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
-  .testimonial {
-    background: var(--white); border-radius: var(--radius); padding: 26px 22px;
-    box-shadow: var(--shadow); position: relative;
+  .carousel-outer { overflow: hidden; width: 100%; padding: 1rem 0; position: relative; }
+ 
+  .testimonials {
+    display: flex;
+    gap: 20px;
+    transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    will-change: transform;
   }
-  .testimonial::before { content: '"'; position: absolute; top: 14px; right: 20px; font-size: 4rem; color: var(--brand-light); font-family: serif; line-height: 1; }
+  .testimonial {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 26px 22px;
+    box-shadow: var(--shadow);
+    position: relative;
+    min-width: 280px;
+    flex: 0 0 280px;
+    box-sizing: border-box;
+    border: 0.5px solid rgba(79,70,229,0.1);
+  }
+  .testimonial::before {
+    content: '"';
+    position: absolute;
+    top: 14px;
+    right: 20px;
+    font-size: 4rem;
+    color: var(--brand-light);
+    font-family: serif;
+    line-height: 1;
+  }
   .stars { color: var(--yellow); font-size: 1rem; margin-bottom: 10px; letter-spacing: 2px; }
-  .testimonial p { font-size: 0.9rem; color: var(--text); margin-bottom: 16px; font-style: italic; }
+  .testimonial p { font-size: 0.9rem; color: var(--text); margin-bottom: 16px; font-style: italic; line-height: 1.6; }
   .testimonial-author { display: flex; align-items: center; gap: 12px; }
-  .avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--brand); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; font-family: 'Sora', sans-serif; flex-shrink: 0; }
-  .author-info h5 { font-size: 0.88rem; font-weight: 700; color: var(--navy); }
+  .avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--brand); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1rem; flex-shrink: 0;
+  }
+  .author-info h5 { font-size: 0.88rem; font-weight: 700; color: var(--navy); margin: 0 0 2px; }
   .author-info span { font-size: 0.78rem; color: var(--success); font-weight: 600; }
+  .carousel-dots { display: flex; justify-content: center; gap: 6px; margin-top: 16px; }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #D1D5DB; cursor: pointer; transition: background 0.3s, transform 0.3s;
+  }
+  .dot.active { background: var(--brand); transform: scale(1.3); }
+  .carousel-controls { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 12px; }
+  .ctrl-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1.5px solid rgba(79,70,229,0.3);
+    background: transparent; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: var(--brand); transition: background 0.2s;
+  }
+  .ctrl-btn:hover { background: var(--brand-light); }
+  .play-pause {
+    font-size: 12px; color: var(--brand);
+    background: none; border: none; cursor: pointer;
+    padding: 4px 10px; border-radius: 20px;
+    border: 1.5px solid rgba(79,70,229,0.3);
+    transition: background 0.2s;
+  }
+  .play-pause:hover { background: var(--brand-light); }
 
   /* OFFER */
   .offer { background: linear-gradient(135deg, var(--navy) 0%, #1a1a2e 100%); }
@@ -536,7 +587,7 @@
         <li>Offline classes in Chennai + Online option available</li>
       </ul>
       <div class="hero-ctas">
-        <a href="#" class="btn btn-primary" onclick="openPopup('want_demo_class')">🎓 Enroll Now</a>
+        <a href="#" class="btn btn-primary" onclick="openPopup('enroll_button')">🎓 Enroll Now</a>
         <a href="https://wa.me/918056477261?text=Hi%20Login360%2C%20I%20want%20to%20know%20about%20Data%20Analytics%20Course" class="btn btn-wa" target="_blank">💬 WhatsApp Us</a>
         <a href="tel:+918056477261" class="btn btn-call">📞 Call Now</a>
       </div>
@@ -622,7 +673,7 @@
 
           <button type="submit" class="form-submit" id="submit-btn-popup">
             <span class="spinner"></span>
-            <span class="btn-text" id="submit-label">Submit</span>
+            <span class="btn-text" id="submit-label-popup">Submit</span>
           </button>
 
           <p class="form-note">🔒 100% Free &amp; No Spam. We'll call you within 30 minutes!</p>
@@ -763,7 +814,7 @@
     // Update UI
     document.getElementById('popup-card').setAttribute('data-badge', cfg.badge);
     document.getElementById('popup-title').textContent = cfg.title;
-    document.getElementById('submit-label').textContent = cfg.submitLabel;
+    document.getElementById('submit-label-popup').textContent = cfg.submitLabel;
     document.getElementById('form_type_popup').value = formType;
 
     // Show overlay
@@ -1016,34 +1067,125 @@
       <div class="stat-box"><div class="stat-num">3 LPA+</div><div class="stat-label">Average Salary</div></div>
       <div class="stat-box"><div class="stat-num">90</div><div class="stat-label">Days to Placement</div></div>
     </div>
-    <div class="testimonials fade-in">
-      <div class="testimonial">
-        <div class="stars">★★★★★</div>
-        <p>I was a BCA graduate with zero job offers for 8 months. After Login360's Data Analytics course, I got placed as a Data Analyst at ₹3.5 LPA within 60 days. Best decision of my life!</p>
-        <div class="testimonial-author">
-          <div class="avatar">P</div>
-          <div class="author-info"><h5>Priya S.</h5><span>✅ Placed – Data Analyst, Chennai</span></div>
-        </div>
-      </div>
-      <div class="testimonial">
-        <div class="stars">★★★★★</div>
-        <p>No coding background, arts graduate — I thought IT was not for me. Login360 proved me wrong. The trainers are very patient and the real project experience made all the difference.</p>
-        <div class="testimonial-author">
-          <div class="avatar">K</div>
-          <div class="author-info"><h5>Karthik R.</h5><span>✅ Placed – BI Developer, Coimbatore</span></div>
-        </div>
-      </div>
-      <div class="testimonial">
-        <div class="stars">★★★★★</div>
-        <p>The placement team here is genuinely supportive. They helped me with resume, mock interviews, and even referred me directly to a company. Got placed in just 45 days after completion!</p>
-        <div class="testimonial-author">
-          <div class="avatar">A</div>
-          <div class="author-info"><h5>Anitha M.</h5><span>✅ Placed – SQL Developer, Kochi</span></div>
-        </div>
-      </div>
+    <div class="carousel-outer" id="carouselOuter">
+      <div class="testimonials fade-in" id="carousel"></div>
+    </div>
+    <div class="carousel-dots" id="dots"></div>
+    <div class="carousel-controls">
+      <button class="ctrl-btn" id="prevBtn">&#8592;</button>
+      <button class="play-pause" id="playBtn">⏸</button>
+      <button class="ctrl-btn" id="nextBtn">&#8594;</button>
     </div>
   </div>
 </section>
+
+<script>
+
+    const testimonials = [
+      { rating: 5, feedback: "I completed my degree without practical skills and struggled for months. After joining Login360, I learned real-time tools, gained confidence, and finally got placed within 60 days successfully.", initial: "R", name: "Rahul K.", placement: "Placed – Data Analyst, Chennai" },
+      { rating: 5, feedback: "Coming from a non-IT background, I had zero coding knowledge. Login360 trainers explained everything clearly, helped with projects, and guided me throughout. Now I'm working as a developer confidently.", initial: "S", name: "Sneha V.", placement: "Placed – Python Developer, Coimbatore" },
+      { rating: 5, feedback: "I was attending interviews but kept getting rejected. Login360 helped improve my resume, technical skills, and confidence. With their placement support, I secured my first IT job within weeks.", initial: "A", name: "Arun P.", placement: "Placed – SQL Developer, Chennai" },
+      { rating: 5, feedback: "The course structure is very practical and easy to follow. Trainers focus on real-time projects which helped me understand concepts better and perform well during interviews and technical rounds.", initial: "D", name: "Divya R.", placement: "Placed – Data Analyst, Bangalore" },
+      { rating: 5, feedback: "Best institute for freshers who want to start their IT career. They teach from basics, provide assignments, and ensure we are ready for interviews with strong placement assistance support.", initial: "K", name: "Kavin S.", placement: "Placed – Full Stack Developer, Chennai" },
+      { rating: 5, feedback: "I had a career gap and no confidence to attend interviews. Login360 guided me step by step, improved my skills, and helped me get placed in a reputed company.", initial: "V", name: "Vignesh R.", placement: "Placed – Data Analyst, Chennai" },
+      { rating: 5, feedback: "Affordable price with excellent training quality. Trainers are very friendly and always ready to clear doubts. The practical sessions and projects helped me understand everything easily and quickly.", initial: "M", name: "Meena T.", placement: "Placed – BI Developer, Coimbatore" },
+      { rating: 5, feedback: "Daily practice sessions and assignments helped me improve consistently. The placement team supported me with interview scheduling and preparation. Finally, I got selected and started my IT career confidently.", initial: "P", name: "Pooja N.", placement: "Placed – Python Developer, Chennai" },
+      { rating: 5, feedback: "Login360 provides a very good learning environment for beginners. The trainers explain concepts clearly and focus more on practical knowledge which helped me crack interviews easily without confusion.", initial: "S", name: "Sathish K.", placement: "Placed – SQL Developer, Chennai" },
+      { rating: 5, feedback: "I joined Login360 without any confidence or knowledge. Now I can attend interviews confidently and answer questions easily. Thanks to the trainers and placement team for their support.", initial: "L", name: "Lavanya S.", placement: "Placed – Data Analyst, Coimbatore" },
+      { rating: 5, feedback: "Mock interviews conducted here helped me understand real interview scenarios. I improved my communication and technical skills, which helped me clear interviews and secure a good IT job.", initial: "R", name: "Ramesh V.", placement: "Placed – Full Stack Developer, Chennai" },
+      { rating: 5, feedback: "Before joining, I was confused about my career. Login360 gave me clear direction, proper guidance, and industry-level training which helped me achieve my goal of getting placed successfully.", initial: "A", name: "Anjali M.", placement: "Placed – BI Developer, Bangalore" },
+      { rating: 5, feedback: "The trainers are very supportive and explain every concept patiently. Even beginners can understand easily. The real-time projects helped me gain confidence and perform well in technical interviews.", initial: "S", name: "Surya K.", placement: "Placed – Data Analyst, Chennai" },
+      { rating: 5, feedback: "Login360 helped me switch from non-IT background to IT field smoothly. Their structured training and placement support made it possible for me to start my career successfully.", initial: "H", name: "Harini V.", placement: "Placed – BI Developer, Chennai" },
+      { rating: 5, feedback: "The syllabus is updated and covers all industry-relevant tools. Trainers focus on practical sessions, making learning easy. This helped me gain skills required for real job roles and interviews.", initial: "M", name: "Manoj K.", placement: "Placed – Full Stack Developer, Coimbatore" }
+    ];
+
+    const VISIBLE = 3;
+    const carousel = document.getElementById('carousel');
+    const dotsEl = document.getElementById('dots');
+    const outer = document.getElementById('carouselOuter');
+
+    let current = 0;
+    let playing = true;
+    let timer;
+
+    function getCardWidth() {
+      const w = outer.offsetWidth;
+      const gap = 20;
+      const cols = w < 600 ? 1 : w < 900 ? 2 : 3;
+      return (w - gap * (cols - 1)) / cols;
+    }
+
+    function buildCards() {
+      carousel.innerHTML = '';
+      testimonials.forEach(({ rating, feedback, initial, name, placement }) => {
+        const card = document.createElement('div');
+        card.className = 'testimonial';
+        card.innerHTML = `
+          <div class="stars">${'★'.repeat(rating)}</div>
+          <p>${feedback}</p>
+          <div class="testimonial-author">
+            <div class="avatar">${initial}</div>
+            <div class="author-info">
+              <h5>${name}</h5>
+              <span>✅ ${placement}</span>
+            </div>
+          </div>`;
+        carousel.appendChild(card);
+      });
+    }
+
+    function buildDots() {
+      dotsEl.innerHTML = '';
+      const cols = outer.offsetWidth < 600 ? 1 : outer.offsetWidth < 900 ? 2 : 3;
+      const total = testimonials.length - cols + 1;
+      for (let i = 0; i < total; i++) {
+        const d = document.createElement('div');
+        d.className = 'dot' + (i === 0 ? ' active' : '');
+        d.addEventListener('click', () => goTo(i));
+        dotsEl.appendChild(d);
+      }
+    }
+
+    function getCardWidthWithGap() {
+      const cards = carousel.querySelectorAll('.testimonial');
+      if (!cards.length) return 300;
+      return cards[0].offsetWidth + 20;
+    }
+
+    function goTo(idx) {
+      const cols = outer.offsetWidth < 600 ? 1 : outer.offsetWidth < 900 ? 2 : 3;
+      const max = testimonials.length - cols;
+      current = Math.max(0, Math.min(idx, max));
+      const offset = current * getCardWidthWithGap();
+      carousel.style.transform = `translateX(-${offset}px)`;
+      document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
+    function next() { goTo(current + 1 >= testimonials.length - (outer.offsetWidth < 600 ? 0 : outer.offsetWidth < 900 ? 1 : 2) ? 0 : current + 1); }
+
+    function startTimer() { timer = setInterval(next, 2000); }
+    function stopTimer() { clearInterval(timer); }
+
+    document.getElementById('nextBtn').addEventListener('click', () => { stopTimer(); next(); if (playing) startTimer(); });
+    document.getElementById('prevBtn').addEventListener('click', () => { stopTimer(); goTo(current - 1 < 0 ? 0 : current - 1); if (playing) startTimer(); });
+    document.getElementById('playBtn').addEventListener('click', function() {
+      playing = !playing;
+      this.textContent = playing ? '⏸' : '▶';
+      playing ? startTimer() : stopTimer();
+    });
+
+    function init() {
+      const cw = getCardWidth();
+      carousel.querySelectorAll('.testimonial').forEach(c => { c.style.minWidth = cw + 'px'; c.style.flex = `0 0 ${cw}px`; });
+      buildDots();
+      goTo(current);
+    }
+
+    buildCards();
+    setTimeout(() => { init(); startTimer(); }, 50);
+    window.addEventListener('resize', () => { init(); });
+
+</script>
 
 <!-- OFFER -->
 <section class="offer" id="offer">
