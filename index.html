@@ -500,6 +500,14 @@
     .sticky-wa-label { display: none; }
   }
 
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-6px); }
+    40%      { transform: translateX(6px); }
+    60%      { transform: translateX(-4px); }
+    80%      { transform: translateX(4px); }
+  }
+
   /* ANIMATIONS */
   .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
   .fade-in.visible { opacity: 1; transform: translateY(0); }
@@ -535,28 +543,28 @@
     </div>
     <form id="enroll-form">
       <div class="form-card">
-        <h3>Book Your FREE Demo Class Today!</h3>
+        <h3>Start Your IT Career in 90 Days!</h3>
         <input type="hidden" name="form_type" id="form_type_input" value="want_demo_class">
         <div class="form-group">
           <label>Your Full Name *</label>
-          <input type="text" name="name" placeholder="Enter your name">
+          <input type="text" name="name" id="f-name" placeholder="Enter your name">
         </div>
         <div class="form-group">
           <label>Mobile Number *</label>
-          <input type="tel" name="phone" placeholder="+91 XXXXX XXXXX">
+          <input type="tel" name="phone" id="f-phone" placeholder="+91 XXXXX XXXXX">
         </div>
         <div class="form-group">
           <label>Your Location *</label>
-          <input type="text" name="location" placeholder="City, State (e.g. Chennai, Tamil Nadu)" autocomplete="address-level2">
+          <input type="text" name="location" id="f-location" placeholder="City, State (e.g. Chennai, Tamil Nadu)" autocomplete="address-level2">
         </div>
         <div class="form-group">
           <label>Select Course *</label>
-          <select name="course">
+          <select name="course" id="f-course">
             <!-- <option value="">Select Course</option> -->
             <option selected>Data Analytics</option>
-            <!-- <option>Python Programming</option>
+            <option>Python Programming</option>
             <option>Power BI</option>
-            <option>SQL for Beginners</option> -->
+            <option>SQL for Beginners</option>
           </select>
         </div>
         <button type="submit" class="form-submit" id="submit-btn">
@@ -579,12 +587,12 @@
 
       <!-- FORM STATE -->
       <div id="form-state">
-        <h3 id="popup-title">Book Your FREE Demo Class Today!</h3>
+        <h3 id="popup-title">Start Your IT Career in 90 Days!</h3>
 
         <form id="enroll-form-popup">
 
           <!-- HIDDEN: form_type — set dynamically by openPopup() -->
-          <input type="hidden" name="form_type" id="form_type_input" value="">
+          <input type="hidden" name="form_type" id="form_type_popup" value="">
 
           <div class="form-group">
             <label for="f-name">Your Full Name *</label>
@@ -606,12 +614,15 @@
             <select id="f-course" name="course">
               <!-- <option value="">Select Course</option> -->
               <option>Data Analytics</option>
+              <option>Python Programming</option>
+              <option>Power BI</option>
+              <option>SQL for Beginners</option>
             </select>
           </div>
 
           <button type="submit" class="form-submit" id="submit-btn-popup">
             <span class="spinner"></span>
-            <span class="btn-text" id="submit-label">Get FREE Demo Class →</span>
+            <span class="btn-text" id="submit-label">Submit</span>
           </button>
 
           <p class="form-note">🔒 100% Free &amp; No Spam. We'll call you within 30 minutes!</p>
@@ -622,6 +633,63 @@
 </div>
 
 <script>
+
+  /* ─── VALIDATION ──────────────────────────────────────────── */
+  function clearErrors() {
+    document.querySelectorAll('.form-group input, .form-group select')
+      .forEach(el => el.classList.remove('error'));
+    document.querySelectorAll('.field-error')
+      .forEach(el => el.remove());
+  }
+
+  function markError(id, message) {
+    const el = document.getElementById(id);
+    el.classList.add('error');
+
+    // Inject error message below the field
+    const msg = document.createElement('span');
+    msg.className = 'field-error';
+    msg.textContent = message;
+    msg.style.cssText = 'display:block; font-size:0.75rem; color:#E53E3E; margin-top:4px; font-family:"DM Sans",sans-serif;';
+    el.parentNode.appendChild(msg);
+
+    // Shake animation
+    el.style.animation = 'none';
+    requestAnimationFrame(() => { el.style.animation = 'shake 0.35s ease'; });
+  }
+
+  function validate(data) {
+
+    clearErrors();
+    let valid = true;
+
+    // Name — must not be empty
+    if (!data.name.trim()) {
+      markError('f-name', 'Please enter your full name.');
+      valid = false;
+    }
+
+    // Phone — strip +91 and all spaces, then check exactly 10 digits starting with 6–9
+    const rawPhone = data.phone.replace(/^\+91[\s-]?/, '').replace(/\s|-/g, '');
+    if (!/^[6-9]\d{9}$/.test(rawPhone)) {
+      markError('f-phone', 'Enter a valid 10-digit Indian mobile number.');
+      valid = false;
+    }
+
+    // Location — must not be empty
+    if (!data.location.trim()) {
+      markError('f-location', 'Please enter your city or location.');
+      valid = false;
+    }
+
+    // Course — must be selected
+    if (!data.course) {
+      markError('f-course', 'Please select a course.');
+      valid = false;
+    }
+
+    return valid;
+  }
 
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzfRNGeVp0B4WvKGyb1w4QKUJUWL-VZ66H4OpcPJnEv6T8s5y6Z1jgkU8vyJMy8S7op9Q/exec";
 
@@ -635,6 +703,11 @@
       course: e.target.course.value,
       form_type: e.target.form_type.value,
     }; 
+    
+    if (!validate(formData)){
+      alert("Enter your details correctly.");
+      return;
+    }   
     
     // Loading state
     const btn = document.getElementById('submit-btn');
@@ -664,13 +737,13 @@
   const FORM_CONFIG = {
     grab_offer: {
       badge:      '🔥 Limited Time Offer',
-      title:      'Claim Your Exclusive Offer!',
+      title:      'Start Your IT Career in 90 Days',
       submitLabel:'Grab My Offer →',
       successMsg: "Your offer has been reserved! We'll reach out within 30 minutes.",
     },
     want_demo_class: {
       badge:      '🎓 Free Career Counselling',
-      title:      'Book Your FREE Demo Class Today!',
+      title:      'Get a High-Paying IT Job in 90 Days',
       submitLabel:'Get FREE Demo Class →',
       successMsg: "We've received your request and will call you within 30 minutes.",
     },
@@ -690,7 +763,7 @@
     document.getElementById('popup-card').setAttribute('data-badge', cfg.badge);
     document.getElementById('popup-title').textContent = cfg.title;
     document.getElementById('submit-label').textContent = cfg.submitLabel;
-    document.getElementById('form_type_input').value = formType;
+    document.getElementById('form_type_popup').value = formType;
 
     // Show overlay
     document.getElementById('popup-overlay').classList.add('active');
@@ -727,7 +800,12 @@
       course:    e.target.course.value,
       form_type: e.target.form_type.value,
     };
-
+    console.log(formData.name , formData.form_type)
+    if (!validate(formData)){
+      alert("Enter your details correctly.");
+      return;
+    }
+    
     // Loading state
     const btn = document.getElementById('submit-btn-popup');
     btn.classList.add('loading');
@@ -741,8 +819,11 @@
         body: JSON.stringify(formData),
       });
       
-      // alert("Data Stored Successfully");
-      window.location.href = "./thank-you.html";
+      if (formData.form_type == "download_full_syllabus") {
+        window.location.href = "https://drive.google.com/file/d/1JFvXNAM3T8_E93zvoJdo1PqwXur_ad76/view?usp=sharing";
+      }else{
+        window.location.href = "./thank-you.html";
+      }
 
     } catch (err) {
       console.error('Submission error:', err);
@@ -837,7 +918,7 @@
 </section>
 
 <!-- COURSE MODULES -->
-<section class="modules">
+<section class="modules" class="modules">
   <div class="container">
     <div class="section-label">Course Curriculum</div>
     <h2 class="section-title">What You Will Learn</h2>
@@ -875,7 +956,7 @@
       </div>
     </div>
     <div style="text-align:center;margin-top:40px;">
-      <a href="#" class="btn btn-primary" style="font-size:1rem;" onclick="openPopup('download_full_syllabus')">Download Full Syllabus →</a>
+      <a href="#modules" class="btn btn-primary" style="font-size:1rem;" onclick="openPopup('download_full_syllabus')">Download Full Syllabus →</a>
     </div>
   </div>
 </section>
@@ -960,7 +1041,7 @@
 </section>
 
 <!-- OFFER -->
-<section class="offer">
+<section class="offer" id="offer">
   <div class="container" style="text-align:center;">
     <div class="section-label" style="color:var(--brand)">Limited Time Offer</div>
     <h2 class="section-title" style="color:var(--white)">Enroll This Week & Save ₹2,000!</h2>
@@ -981,7 +1062,7 @@
         <li>Free Recorded Sessions for Revision</li>
         <li>Lifetime Alumni Community Access</li>
       </ul>
-      <a href="#" class="btn btn-primary" style="font-size:1.05rem;padding:16px 36px;" onclick="openPopup('grab_offer')">🎓 Grab This Offer Now →</a>
+      <a href="#offer" class="btn btn-primary" style="font-size:1.05rem;padding:16px 36px;" onclick="openPopup('grab_offer')">🎓 Grab This Offer Now →</a>
       <p style="color:rgba(255,255,255,0.45);font-size:0.78rem;margin-top:12px;">EMI options available. No hidden fees.</p>
     </div>
   </div>
@@ -1067,12 +1148,12 @@
 </section>
 
 <!-- FINAL CTA -->
-<section class="final-cta">
+<section class="final-cta" id="final-cta">
   <div class="container">
     <h2>Your IT Career Starts Here. Don't Wait Any Longer.</h2>
     <p>Every day you delay is another day without a job. Take the first step — it's completely FREE. Book your demo class now.</p>
     <div class="cta-group">
-      <a href="#" class="btn btn-white" onclick="openPopup('want_demo_class')">🎓 Book Free Demo Class</a>
+      <a href="#final-cta" class="btn btn-white" onclick="openPopup('want_demo_class')">🎓 Book Free Demo Class</a>
       <a href="tel:+918754687537" class="btn btn-dark">📞 Call Us Now</a>
       <a href="https://wa.me/918754687537?text=Hi%20Login360%2C%20I%20want%20to%20enroll%20in%20Data%20Analytics%20Course" class="btn btn-wa" target="_blank">💬 WhatsApp Us</a>
     </div>
